@@ -8,7 +8,7 @@ use druid::{Data, KeyEvent, Lens, LensExt, WidgetExt};
 
 use crate::synth::waves::WaveForm;
 use crate::synth::ADSRParam;
-use crate::synth::{Synth, Oscillator, ADSR, Start};
+use crate::synth::{Synth, Oscillator, ADSR, Start, adsr_constraints};
 
 fn get_note(key: &KeyCode) -> Option<f32> {
     let freq = match key {
@@ -33,6 +33,17 @@ fn round_float(f: f32, accuracy: i32) -> f32 {
     let base = 10f32.powi(accuracy);
     (f * base).round() / base
 }
+
+const LOG_SCALE_BASE: f64 = 2.;
+
+fn slider_log(x: f32) -> f64 {
+    f64::log2(x as f64)
+}
+
+const DEFAULT_ATTACK: f64 = 300.;
+const DEFAULT_DECAY: f64 = 300.;
+const DEFAULT_SUSTAIN: f64 = 0.7;
+const DEFAULT_RELEASE: f64 = 300.;
 
 #[derive(Clone)]
 struct WaveFormUI {
@@ -102,34 +113,38 @@ impl SynthUIData {
     pub fn new(synth: Arc<Mutex<Synth<i16>>>, event_sender: mpsc::Sender<SynthUIEvent>, sample_rate: f32) -> Self {
         let mut synth_lock = synth.lock().unwrap();
 
+        // attack, decay and release are log scaler representation now
+        let default_attack_log = slider_log(DEFAULT_ATTACK as f32);
+        let default_decay_log = slider_log(DEFAULT_DECAY as f32);
+        let default_release_log = slider_log(DEFAULT_RELEASE as f32);
         let env1 = EnvSettings {
             id: 0,
-            attack: 300.0,
-            decay: 300.0,
-            sustain: 0.7,
-            release: 300.0,
+            attack: default_attack_log,
+            decay: default_decay_log,
+            sustain: DEFAULT_SUSTAIN,
+            release: default_release_log,
         };
         let envelope1 = ADSR::new(
             sample_rate,
-            env1.attack as u32,
-            env1.decay as u32,
-            env1.sustain as f32,
-            env1.release as u32);
+            DEFAULT_ATTACK as u32,
+            DEFAULT_DECAY as u32,
+            DEFAULT_SUSTAIN as f32,
+            DEFAULT_RELEASE as u32);
         synth_lock.add_env(envelope1);
 
         let env2 = EnvSettings {
             id: 1,
-            attack: 300.0,
-            decay: 300.0,
-            sustain: 0.7,
-            release: 400.0,
+            attack: default_attack_log,
+            decay: default_decay_log,
+            sustain: DEFAULT_SUSTAIN,
+            release: default_release_log,
         };
         let envelope2 = ADSR::new(
             sample_rate,
-            env2.attack as u32,
-            env2.decay as u32,
-            env2.sustain as f32,
-            env2.release as u32);
+            DEFAULT_ATTACK as u32,
+            DEFAULT_DECAY as u32,
+            DEFAULT_SUSTAIN as f32,
+            DEFAULT_RELEASE as u32);
         synth_lock.add_env(envelope2);
 
         let osc1 = OscSettings {
@@ -278,16 +293,16 @@ impl SynthUI {
 
     fn update_env(&self, synth: &mut MutexGuard<Synth<i16>>, new: &EnvSettings, old: &EnvSettings) {
         if new.attack != old.attack {
-            synth.set_env_parameter(new.id, ADSRParam::Attack(new.attack as f32))
+            synth.set_env_parameter(new.id, ADSRParam::Attack(LOG_SCALE_BASE.powf(new.attack).round() as f32))
         }
         if new.decay != old.decay {
-            synth.set_env_parameter(new.id, ADSRParam::Decay(new.decay as f32))
+            synth.set_env_parameter(new.id, ADSRParam::Decay(LOG_SCALE_BASE.powf(new.decay).round() as f32))
         }
         if new.sustain != old.sustain {
             synth.set_env_parameter(new.id, ADSRParam::Sustain(new.sustain as f32))
         }
         if new.release != old.release {
-            synth.set_env_parameter(new.id, ADSRParam::Release(new.release as f32))
+            synth.set_env_parameter(new.id, ADSRParam::Release(LOG_SCALE_BASE.powf(new.release).round() as f32))
         }
     }
 }
@@ -541,11 +556,14 @@ where
     let lens_clone = env_lens.clone();
     let attack_value = Label::dynamic(
         move |data: &SynthUIData, _| {
-            format!("{} ms", lens_clone.with(data, |env| { env.attack.round() }))
+            format!("{} ms", lens_clone.with(data, |env| { LOG_SCALE_BASE.powf(env.attack).round() }))
         }
     ).with_text_size(TEXT_SMALL);
+    // Log scale slider
+    let attack_min = slider_log(adsr_constraints::MIN_ATTACK);
+    let attack_max = slider_log(adsr_constraints::MAX_ATTACK);
     let attack_slider = Slider::new()
-                    .with_range(3.0, 3000.0)
+                    .with_range(attack_min, attack_max)
                     .lens(env_lens.clone().then(EnvSettings::attack));
     env_flex.add_child(
         Flex::row()
@@ -558,11 +576,14 @@ where
     let lens_clone = env_lens.clone();
     let decay_value = Label::dynamic(
         move |data: &SynthUIData, _| {
-            format!("{} ms", lens_clone.with(data, |env| { env.decay.round() }))
+            format!("{} ms", lens_clone.with(data, |env| { LOG_SCALE_BASE.powf(env.decay).round() }))
         }
     ).with_text_size(TEXT_SMALL);
+    // Log scale slider
+    let decay_min = slider_log(adsr_constraints::MIN_DECAY);
+    let decay_max = slider_log(adsr_constraints::MAX_DECAY);
     let decay_slider = Slider::new()
-                    .with_range(3.0, 3000.0)
+                    .with_range(decay_min, decay_max)
                     .lens(env_lens.clone().then(EnvSettings::decay));
     env_flex.add_child(
         Flex::row()
@@ -592,11 +613,14 @@ where
     let lens_clone = env_lens.clone();
     let release_value = Label::dynamic(
         move |data: &SynthUIData, _| {
-            format!("{} ms", lens_clone.with(data, |env| { env.release.round() }))
+            format!("{} ms", lens_clone.with(data, |env| { LOG_SCALE_BASE.powf(env.release).round() }))
         }
     ).with_text_size(TEXT_SMALL);
+    // Log scale slider
+    let release_min = slider_log(adsr_constraints::MIN_RELEASE);
+    let release_max = slider_log(adsr_constraints::MAX_RELEASE);
     let release_slider = Slider::new()
-                    .with_range(3.0, 3000.0)
+                    .with_range(release_min, release_max)
                     .lens(env_lens.clone().then(EnvSettings::release));
     env_flex.add_child(
         Flex::row()

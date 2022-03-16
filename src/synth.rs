@@ -2,7 +2,7 @@ mod envelope;
 mod oscillator;
 pub mod waves;
 
-pub use self::envelope::{ADSR, ADSRParam};
+pub use self::envelope::{ADSR, ADSRParam, adsr_constraints};
 pub use self::oscillator::{Oscillator, Start};
 pub use self::waves::WaveForm;
 use crate::error::{BaseError, Result};

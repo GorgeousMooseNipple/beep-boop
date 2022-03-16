@@ -4,6 +4,7 @@ use std::time::Instant;
 
 type Milliseconds = u32;
 
+#[allow(dead_code)]
 pub mod adsr_constraints {
     pub const MIN_ATTACK: f32 = 1.;
     pub const MAX_ATTACK: f32 = 3000.;
