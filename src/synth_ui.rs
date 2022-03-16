@@ -407,6 +407,8 @@ const TEXT_MEDIUM: f64 = 18.0;
 const TEXT_SMALL: f64 = 14.0;
 const MAX_UNISONS: f64 = 7.0;
 const ENV_NUM: f64 = 2.0;
+const SLIDER_WIDTH_SMALL: f64 = 110.0;
+const SLIDER_WIDTH_MEDIUM: f64 = 170.0;
 
 // unison(label + label + stepper);
 fn oscillator_layout<L>(title: &str, osc_lens: L) -> impl Widget<SynthUIData>
@@ -415,16 +417,20 @@ where
     + Clone
     + 'static
 {
+    let left_padding = (10.0, 0.0, 0.0, 0.0);
+    let row_padding = (10.0, 0.0, 0.0, 10.0);
     let mut osc_flex = Flex::column()
                 .cross_axis_alignment(CrossAxisAlignment::Start)
                 .with_child(
         Label::new(title).with_text_size(TEXT_MEDIUM).padding(10.0)
     );
     // Volume and envelope
-    osc_flex.add_child(Label::new("Volume").with_text_size(TEXT_SMALL));
+    osc_flex.add_child(Label::new("Volume").with_text_size(TEXT_SMALL).padding(left_padding));
+    // Volume slider
     let volume_slider = Slider::new()
                     .with_range(0.0, 1.0)
-                    .lens(osc_lens.clone().then(OscSettings::volume));
+                    .lens(osc_lens.clone().then(OscSettings::volume)).fix_width(SLIDER_WIDTH_SMALL);
+    // Envelope
     let lens_clone = osc_lens.clone();
     let env_idx = Label::dynamic(
         move |data: &SynthUIData, _| {
@@ -440,7 +446,7 @@ where
                     .with_child(Label::new("Envelope").with_text_size(TEXT_SMALL))
                     .with_child(env_idx)
                     .with_child(env_stepper);
-    osc_flex.add_child(volume_env_flex);
+    osc_flex.add_child(volume_env_flex.padding((0.0, 0.0, 0.0, 10.0)));
 
     // Waveform
     let lens_clone = osc_lens.clone();
@@ -455,7 +461,7 @@ where
         .with_wraparound(true)
         .lens(osc_lens.clone().then(OscSettings::wave_idx));
     let wave_flex = Flex::row().with_child(wave_label.fix_width(100.0)).with_child(wave_step);
-    osc_flex.add_child(wave_flex.padding(8.0));
+    osc_flex.add_child(wave_flex.padding(row_padding));
 
     // Transpose
     let lens_clone = osc_lens.clone();
@@ -471,9 +477,9 @@ where
                         .lens(osc_lens.clone().then(OscSettings::transpose));
     let transpose_flex = Flex::row()
                     .with_child(Label::new("Transpose").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
-                    .with_child(transpose_slider.padding(5.0))
+                    .with_child(transpose_slider.fix_width(SLIDER_WIDTH_MEDIUM))
                     .with_child(transpose_value.fix_width(25.0));
-    osc_flex.add_child(transpose_flex.padding(5.0));
+    osc_flex.add_child(transpose_flex.padding(row_padding));
 
     // Tune
     let lens_clone = osc_lens.clone();
@@ -489,9 +495,9 @@ where
                         .lens(osc_lens.clone().then(OscSettings::tune));
     let tune_flex = Flex::row()
                     .with_child(Label::new("Tune").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
-                    .with_child(tune_slider.padding(5.0))
+                    .with_child(tune_slider.fix_width(SLIDER_WIDTH_MEDIUM))
                     .with_child(tune_value.fix_width(25.0));
-    osc_flex.add_child(tune_flex.padding(5.0));
+    osc_flex.add_child(tune_flex.padding(row_padding));
 
     // Unisons
     let uni_stepper = Stepper::new()
@@ -511,9 +517,9 @@ where
                     .with_child(Label::new("Unisons").with_text_size(TEXT_SMALL))
                     .with_child(uni_label)
                     .with_child(uni_stepper);
-    osc_flex.add_child(uni_flex.padding(10.0));
+    osc_flex.add_child(uni_flex.padding(row_padding));
 
-    osc_flex.padding(5.0).border(druid::Color::BLACK, 1.0).fix_width(350.0)
+    osc_flex.padding(5.0).border(druid::Color::BLACK, 1.0).fix_width(370.0)
 }
 
 fn synth_volume_layout() -> impl Widget<SynthUIData> {
@@ -641,9 +647,9 @@ pub fn build_ui() -> impl Widget<SynthUIData> {
 
     let control_layout = Flex::<SynthUIData>::column()
                     .with_child(synth_volume_layout())
-                    .with_spacer(10.0)
+                    // .with_spacer(10.0)
                     .with_child(env_layout("Env1", SynthUIData::env1))
-                    .with_spacer(45.0)
+                    // .with_spacer(45.0)
                     .with_child(env_layout("Env2", SynthUIData::env2));
     synth_ui.root.add_child(control_layout.expand_height().padding(20.0));
 
