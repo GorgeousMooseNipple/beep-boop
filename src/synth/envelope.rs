@@ -4,6 +4,17 @@ use std::time::Instant;
 
 type Milliseconds = u32;
 
+pub mod adsr_constraints {
+    pub const MIN_ATTACK: f32 = 1.;
+    pub const MAX_ATTACK: f32 = 3000.;
+    pub const MIN_DECAY: f32 = 1.;
+    pub const MAX_DECAY: f32 = 3000.;
+    pub const MIN_SUSTAIN: f32 = 0.;
+    pub const MAX_SUSTAIN: f32 = 1.;
+    pub const MIN_RELEASE: f32 = 1.;
+    pub const MAX_RELEASE: f32 = 3000.;
+}
+
 pub enum ADSRParam {
     Attack(f32),
     Decay(f32),
@@ -32,9 +43,9 @@ impl ADSR {
         sustain: f32,
         release: Milliseconds,
     ) -> Self {
-        let attack = attack.max(1) as f32;
-        let decay = decay.max(1) as f32;
-        let release = release.max(1) as f32;
+        let attack = adsr_constraints::MIN_ATTACK.max(attack as f32);
+        let decay = adsr_constraints::MIN_DECAY.max(decay as f32);
+        let release = adsr_constraints::MIN_RELEASE.max(release as f32);
         let attack_incr = 1.0 / (attack / 1000.0 * sample_rate);
         let decay_decr = -((1.0 - sustain) / (decay / 1000.0 * sample_rate));
         let release_decr = -(sustain / (release / 1000.0 * sample_rate));
