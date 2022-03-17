@@ -2,7 +2,7 @@ use druid::{Lens, LensExt, WidgetExt};
 use druid::widget::prelude::*;
 use druid::widget::{Flex, Stepper, Slider, Label, CrossAxisAlignment};
 
-use super::model::{SynthUIData, OscSettings, EnvSettings, WAVEFORMS};
+use super::model::{SynthUIData, OscSettings, EnvSettings, WAVEFORMS, ClickableSlider, DefaultParameter};
 use crate::synth::adsr_constraints;
 
 
@@ -43,8 +43,8 @@ where
     // Volume and envelope
     osc_flex.add_child(Label::new("Volume").with_text_size(TEXT_SMALL).padding(left_padding));
     // Volume slider
-    let volume_slider = Slider::new()
-                    .with_range(0.0, 1.0)
+    let volume_slider = ClickableSlider::new(Slider::new()
+                    .with_range(0.0, 1.0), DefaultParameter::OscVolume)
                     .lens(osc_lens.clone().then(OscSettings::volume)).fix_width(SLIDER_WIDTH_SMALL);
     // Envelope
     let lens_clone = osc_lens.clone();
@@ -88,8 +88,8 @@ where
             })
         }
     ).with_text_size(TEXT_SMALL);
-    let transpose_slider = Slider::new()
-                        .with_range(-24.0, 24.0)
+    let transpose_slider = ClickableSlider::new(Slider::new()
+                        .with_range(-24.0, 24.0), DefaultParameter::OscTranspose)
                         .lens(osc_lens.clone().then(OscSettings::transpose));
     let transpose_flex = Flex::row()
                     .with_child(Label::new("Transpose").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
@@ -106,8 +106,8 @@ where
             })
         }
     ).with_text_size(TEXT_SMALL);
-    let tune_slider = Slider::new()
-                        .with_range(-100.0, 100.0)
+    let tune_slider = ClickableSlider::new(Slider::new()
+                        .with_range(-100.0, 100.0), DefaultParameter::OscTune)
                         .lens(osc_lens.clone().then(OscSettings::tune));
     let tune_flex = Flex::row()
                     .with_child(Label::new("Tune").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
@@ -187,8 +187,8 @@ where
     // Log scale slider
     let attack_min = slider_log(adsr_constraints::MIN_ATTACK);
     let attack_max = slider_log(adsr_constraints::MAX_ATTACK);
-    let attack_slider = Slider::new()
-                    .with_range(attack_min, attack_max)
+    let attack_slider = ClickableSlider::new(Slider::new()
+                    .with_range(attack_min, attack_max), DefaultParameter::EnvAttack)
                     .lens(env_lens.clone().then(EnvSettings::attack));
     env_flex.add_child(
         Flex::row()
@@ -207,8 +207,8 @@ where
     // Log scale slider
     let decay_min = slider_log(adsr_constraints::MIN_DECAY);
     let decay_max = slider_log(adsr_constraints::MAX_DECAY);
-    let decay_slider = Slider::new()
-                    .with_range(decay_min, decay_max)
+    let decay_slider = ClickableSlider::new(Slider::new()
+                    .with_range(decay_min, decay_max), DefaultParameter::EnvDecay)
                     .lens(env_lens.clone().then(EnvSettings::decay));
     env_flex.add_child(
         Flex::row()
@@ -224,8 +224,8 @@ where
             format!("{:.2}", lens_clone.with(data, |env| { env.sustain }))
         }
     ).with_text_size(TEXT_SMALL);
-    let sustain_slider = Slider::new()
-                    .with_range(0.0, 1.0)
+    let sustain_slider = ClickableSlider::new(Slider::new()
+                    .with_range(0.0, 1.0), DefaultParameter::EnvSustain)
                     .lens(env_lens.clone().then(EnvSettings::sustain));
     env_flex.add_child(
         Flex::row()
@@ -244,8 +244,8 @@ where
     // Log scale slider
     let release_min = slider_log(adsr_constraints::MIN_RELEASE);
     let release_max = slider_log(adsr_constraints::MAX_RELEASE);
-    let release_slider = Slider::new()
-                    .with_range(release_min, release_max)
+    let release_slider = ClickableSlider::new(Slider::new()
+                    .with_range(release_min, release_max), DefaultParameter::EnvRelease)
                     .lens(env_lens.clone().then(EnvSettings::release));
     env_flex.add_child(
         Flex::row()

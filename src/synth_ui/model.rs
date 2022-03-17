@@ -1,7 +1,7 @@
 use std::sync::{Arc, mpsc, Mutex, MutexGuard};
 
 use druid::widget::prelude::*;
-use druid::widget::{Flex, CrossAxisAlignment};
+use druid::widget::{Flex, CrossAxisAlignment, Slider};
 use druid::{Data, Lens, KeyEvent};
 use druid::Code as KeyCode;
 
@@ -14,7 +14,33 @@ const DEFAULT_ATTACK: f64 = 300.;
 const DEFAULT_DECAY: f64 = 300.;
 const DEFAULT_SUSTAIN: f64 = 0.7;
 const DEFAULT_RELEASE: f64 = 300.;
+const DEFAULT_TRANSPOSE: f64 = 0.0;
+const DEFAULT_TUNE: f64 = 0.0;
+const DEFAULT_OSC_VOLUME: f64 = 0.5;
 
+pub enum DefaultParameter {
+    EnvAttack,
+    EnvDecay,
+    EnvSustain,
+    EnvRelease,
+    OscTranspose,
+    OscTune,
+    OscVolume,
+}
+
+impl DefaultParameter {
+    pub fn default_value(&self) -> f64 {
+        match self {
+            DefaultParameter::EnvAttack => DEFAULT_ATTACK,
+            DefaultParameter::EnvDecay => DEFAULT_DECAY,
+            DefaultParameter::EnvSustain => DEFAULT_SUSTAIN,
+            DefaultParameter::EnvRelease => DEFAULT_RELEASE,
+            DefaultParameter::OscTranspose => DEFAULT_TRANSPOSE,
+            DefaultParameter::OscTune => DEFAULT_TUNE,
+            DefaultParameter::OscVolume => DEFAULT_OSC_VOLUME,
+        }
+    }
+}
 
 #[derive(Clone)]
 pub struct WaveFormUI {
@@ -202,12 +228,14 @@ impl SynthUIData {
         oscillator2.set_unison_num(osc2.unisons as usize);
         synth_lock.add_osc(oscillator2);
 
+        let volume_db = -25.0;
+        synth_lock.set_volume(volume_db as i32).unwrap();
         drop(synth_lock);
         Self {
             synth,
             event_sender,
             octave_modifier: 2.0,
-            volume_db: -36.0,
+            volume_db,
             osc1,
             osc2,
             env1,
@@ -392,5 +420,74 @@ impl Widget<SynthUIData> for SynthUI {
 
     fn paint(&mut self, ctx: &mut PaintCtx, data: &SynthUIData, env: &Env) {
         self.root.paint(ctx, data, env);
+    }
+}
+
+pub struct ClickableSlider {
+    slider: Slider,
+    parameter: DefaultParameter,
+}
+
+impl ClickableSlider {
+    pub fn new(slider: Slider, parameter: DefaultParameter) -> Self {
+        Self {
+            slider,
+            parameter,
+        }
+    }
+}
+
+impl Widget<f64> for ClickableSlider {
+    fn event(&mut self, ctx: &mut EventCtx, event: &Event, data: &mut f64, env: &Env) {
+        match event {
+            Event::MouseDown(e) => {
+                if e.button.is_left() && e.mods.ctrl() {
+                    match self.parameter {
+                        // Log scale parameters
+                        DefaultParameter::EnvAttack | DefaultParameter::EnvDecay | DefaultParameter::EnvRelease => {
+                            *data = slider_log(self.parameter.default_value() as f32);
+                        },
+                        _ => *data = self.parameter.default_value(),
+                    }
+                    return
+                }
+            },
+            _ => {},
+        }
+        self.slider.event(ctx, event, data, env)
+    }
+
+    fn lifecycle(
+        &mut self,
+        ctx: &mut LifeCycleCtx,
+        event: &LifeCycle,
+        data: &f64,
+        env: &Env,
+    ) {
+        self.slider.lifecycle(ctx, event, data, env)
+    }
+
+    fn update(
+        &mut self,
+        ctx: &mut UpdateCtx,
+        old: &f64,
+        new: &f64,
+        env: &Env,
+    ) {
+        self.slider.update(ctx, old, new, env)
+    }
+
+    fn layout(
+        &mut self,
+        ctx: &mut LayoutCtx,
+        bc: &BoxConstraints,
+        data: &f64,
+        env: &Env,
+    ) -> Size {
+        self.slider.layout(ctx, bc, data, env)
+    }
+
+    fn paint(&mut self, ctx: &mut PaintCtx, data: &f64, env: &Env) {
+        self.slider.paint(ctx, data, env)
     }
 }
