@@ -401,7 +401,9 @@ impl Widget<SynthUIData> for SynthUI {
 }
 
 const BASIC_LABEL_WITDH: f64 = 80.0;
-const LABEL_COLOR: druid::Color = druid::Color::rgba8(0xe9, 0x1e, 0x63, 0xff);
+const LABEL_COLOR_MAIN: druid::Color = druid::Color::rgba8(0xe9, 0x1e, 0x63, 0xff);
+const LABEL_COLOR_SECONDARY: druid::Color = druid::Color::rgba8(0x35, 0xaa, 0xee, 0xff);
+const BORDER_COLOR: druid::Color = druid::Color::rgba8(0x03, 0x12, 0x14, 0xff);
 const BACKGROUND_COLOR: druid::Color = druid::Color::rgba8(0x29, 0x29, 0x29, 0xff);
 const TEXT_LARGE: f64 = 22.0;
 const TEXT_MEDIUM: f64 = 18.0;
@@ -423,7 +425,7 @@ where
     let mut osc_flex = Flex::column()
                 .cross_axis_alignment(CrossAxisAlignment::Start)
                 .with_child(
-        Label::new(title).with_text_size(TEXT_MEDIUM).padding(10.0)
+        Label::new(title).with_text_size(TEXT_MEDIUM).with_text_color(LABEL_COLOR_SECONDARY).padding(10.0)
     );
     // Volume and envelope
     osc_flex.add_child(Label::new("Volume").with_text_size(TEXT_SMALL).padding(left_padding));
@@ -520,14 +522,14 @@ where
                     .with_child(uni_stepper);
     osc_flex.add_child(uni_flex.padding(row_padding));
 
-    osc_flex.padding(5.0).border(druid::Color::BLACK, 1.0).fix_width(390.0)
+    osc_flex.padding(5.0).border(BORDER_COLOR, 1.0).fix_width(390.0)
 }
 
 fn synth_volume_layout() -> impl Widget<SynthUIData> {
     let mut volume_flex = Flex::column()
                     .cross_axis_alignment(CrossAxisAlignment::Center)
                     .with_child(Label::new("BEEP-BOOP")
-                            .with_text_color(LABEL_COLOR)
+                            .with_text_color(LABEL_COLOR_MAIN)
                             .with_text_size(TEXT_LARGE))
                     .with_spacer(10.0);
     let volume_control = Flex::row()
