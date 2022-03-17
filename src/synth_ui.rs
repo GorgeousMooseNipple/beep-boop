@@ -227,7 +227,7 @@ pub struct SynthUI {
 
 impl SynthUI {
     pub fn new() -> Self {
-        Self { root: Flex::row() }
+        Self { root: Flex::row().cross_axis_alignment(CrossAxisAlignment::Start) }
     }
 
     fn handle_key_press(&self, key: &KeyCode, data: &mut SynthUIData) {
@@ -402,6 +402,7 @@ impl Widget<SynthUIData> for SynthUI {
 
 const BASIC_LABEL_WITDH: f64 = 80.0;
 const LABEL_COLOR: druid::Color = druid::Color::rgba8(0xe9, 0x1e, 0x63, 0xff);
+const BACKGROUND_COLOR: druid::Color = druid::Color::rgba8(0x29, 0x29, 0x29, 0xff);
 const TEXT_LARGE: f64 = 22.0;
 const TEXT_MEDIUM: f64 = 18.0;
 const TEXT_SMALL: f64 = 14.0;
@@ -519,7 +520,7 @@ where
                     .with_child(uni_stepper);
     osc_flex.add_child(uni_flex.padding(row_padding));
 
-    osc_flex.padding(5.0).border(druid::Color::BLACK, 1.0).fix_width(370.0)
+    osc_flex.padding(5.0).border(druid::Color::BLACK, 1.0).fix_width(390.0)
 }
 
 fn synth_volume_layout() -> impl Widget<SynthUIData> {
@@ -530,23 +531,25 @@ fn synth_volume_layout() -> impl Widget<SynthUIData> {
                             .with_text_size(TEXT_LARGE))
                     .with_spacer(10.0);
     let volume_control = Flex::row()
-                .with_child(Label::new("Volume").with_text_size(TEXT_MEDIUM).fix_width(BASIC_LABEL_WITDH))
+                .cross_axis_alignment(CrossAxisAlignment::Center)
+                .with_child(Label::new("Volume").with_text_size(TEXT_MEDIUM))
                 .with_child(
                     Slider::new()
                     .with_range(-96.0, -10.0)
                     .lens(SynthUIData::volume_db)
-                    .padding(5.0))
+                    .padding((5.0, 0.0, 5.0, 0.0))
+                    .fix_width(SLIDER_WIDTH_SMALL))
                 .with_child(
                     Label::dynamic(
                         |data: &SynthUIData, _| {
                             format!("{} dB", data.volume_db.round())
                         }
-                    ).fix_width(25.0)
+                    )
                 );
 
     volume_flex.add_child(volume_control);
 
-    volume_flex.padding(10.0)
+    volume_flex
 }
 
 fn env_layout<L>(title: &str, env_lens: L) -> impl Widget<SynthUIData>
@@ -556,7 +559,8 @@ where
     + 'static
 {
     let mut env_flex = Flex::column()
-                    .with_child(Label::new(title).with_text_size(TEXT_MEDIUM));
+                    .cross_axis_alignment(CrossAxisAlignment::Start)
+                    .with_child(Label::new(title).with_text_size(TEXT_MEDIUM).padding(5.0));
 
     // Attack
     let lens_clone = env_lens.clone();
@@ -574,7 +578,7 @@ where
     env_flex.add_child(
         Flex::row()
         .with_child(Label::new("Attack").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
-        .with_child(attack_slider.padding(2.0))
+        .with_child(attack_slider.padding(2.0).fix_width(SLIDER_WIDTH_MEDIUM))
         .with_child(attack_value.fix_width(45.0)).padding(5.0)
     );
 
@@ -594,7 +598,7 @@ where
     env_flex.add_child(
         Flex::row()
         .with_child(Label::new("Decay").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
-        .with_child(decay_slider.padding(2.0))
+        .with_child(decay_slider.padding(2.0).fix_width(SLIDER_WIDTH_MEDIUM))
         .with_child(decay_value.fix_width(45.0)).padding(5.0)
     );
 
@@ -611,7 +615,7 @@ where
     env_flex.add_child(
         Flex::row()
         .with_child(Label::new("Sustain").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
-        .with_child(sustain_slider.padding(2.0))
+        .with_child(sustain_slider.padding(2.0).fix_width(SLIDER_WIDTH_MEDIUM))
         .with_child(sustain_value.fix_width(45.0)).padding(5.0)
     );
 
@@ -631,27 +635,30 @@ where
     env_flex.add_child(
         Flex::row()
         .with_child(Label::new("Release").with_text_size(TEXT_SMALL).fix_width(BASIC_LABEL_WITDH))
-        .with_child(release_slider.padding(2.0))
+        .with_child(release_slider.padding(2.0).fix_width(SLIDER_WIDTH_MEDIUM))
         .with_child(release_value.fix_width(45.0)).padding(5.0)
     );
 
-    env_flex.padding(15.0).border(druid::Color::BLACK, 1.0).fix_width(330.0)
+    env_flex.padding(15.0).fix_width(360.0)
 }
 
 pub fn build_ui() -> impl Widget<SynthUIData> {
     let mut synth_ui = SynthUI::new();
 
     synth_ui.root.add_child(Flex::column()
+                        .cross_axis_alignment(CrossAxisAlignment::Center)
                         .with_child(oscillator_layout("Osc1", SynthUIData::osc1))
+                        .with_spacer(10.0)
                         .with_child(oscillator_layout("Osc2", SynthUIData::osc2)));
 
     let control_layout = Flex::<SynthUIData>::column()
+                    .cross_axis_alignment(CrossAxisAlignment::Center)
                     .with_child(synth_volume_layout())
-                    // .with_spacer(10.0)
+                    .with_spacer(10.0)
                     .with_child(env_layout("Env1", SynthUIData::env1))
-                    // .with_spacer(45.0)
+                    .with_spacer(10.0)
                     .with_child(env_layout("Env2", SynthUIData::env2));
-    synth_ui.root.add_child(control_layout.expand_height().padding(20.0));
+    synth_ui.root.add_child(control_layout.padding((20.0, 0.0, 0.0, 0.0)));
 
-    synth_ui.center()
+    synth_ui.center().background(BACKGROUND_COLOR)
 }
