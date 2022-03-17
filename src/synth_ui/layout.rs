@@ -150,7 +150,7 @@ pub fn synth_volume_layout() -> impl Widget<SynthUIData> {
                 .with_child(Label::new("Volume").with_text_size(TEXT_MEDIUM))
                 .with_child(
                     Slider::new()
-                    .with_range(-96.0, -10.0)
+                    .with_range(-96.0, 0.0)
                     .lens(SynthUIData::volume_db)
                     .padding((5.0, 0.0, 5.0, 0.0))
                     .fix_width(SLIDER_WIDTH_SMALL))
