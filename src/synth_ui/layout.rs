@@ -147,7 +147,7 @@ pub fn synth_volume_layout() -> impl Widget<SynthUIData> {
                     .with_spacer(10.0);
     let volume_control = Flex::row()
                 .cross_axis_alignment(CrossAxisAlignment::Center)
-                .with_child(Label::new("Volume").with_text_size(TEXT_MEDIUM))
+                .with_child(Label::new("Volume").with_text_size(TEXT_MEDIUM).fix_width(BASIC_LABEL_WITDH))
                 .with_child(
                     Slider::new()
                     .with_range(-96.0, 0.0)
@@ -159,7 +159,7 @@ pub fn synth_volume_layout() -> impl Widget<SynthUIData> {
                         |data: &SynthUIData, _| {
                             format!("{} dB", data.volume_db.round())
                         }
-                    )
+                    ).fix_width(25.0)
                 );
 
     volume_flex.add_child(volume_control);
