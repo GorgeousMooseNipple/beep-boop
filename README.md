@@ -42,7 +42,7 @@ Application can be closed by pressing Escape.
 
 ## Demo
 Very unprofessional demo recorded on a microphone directly from my speakers. Sorry about quality.  
-![Demo recording](../media/audio/beep-boop-demo.mp4)
+[Demo recording](../media/audio/beep-boop-demo.mp4)
 
 ## TODO:
 
