@@ -2,7 +2,9 @@ use druid::{Lens, LensExt, WidgetExt};
 use druid::widget::prelude::*;
 use druid::widget::{Flex, Stepper, Slider, Label, CrossAxisAlignment};
 
-use super::model::{SynthUIData, OscSettings, EnvSettings, WAVEFORMS, ClickableSlider, DefaultParameter};
+use super::model::{SynthUIData, OscSettings, EnvSettings, DefaultParameter};
+use super::widgets::WAVEFORMS;
+use super::widgets::DefaultSlider;
 use crate::synth::adsr_constraints;
 
 
@@ -43,7 +45,7 @@ where
     // Volume and envelope
     osc_flex.add_child(Label::new("Volume").with_text_size(TEXT_SMALL).padding(left_padding));
     // Volume slider
-    let volume_slider = ClickableSlider::new(Slider::new()
+    let volume_slider = DefaultSlider::new(Slider::new()
                     .with_range(0.0, 1.0), DefaultParameter::OscVolume)
                     .lens(osc_lens.clone().then(OscSettings::volume)).fix_width(SLIDER_WIDTH_SMALL);
     // Envelope
@@ -88,7 +90,7 @@ where
             })
         }
     ).with_text_size(TEXT_SMALL);
-    let transpose_slider = ClickableSlider::new(Slider::new()
+    let transpose_slider = DefaultSlider::new(Slider::new()
                         .with_range(-24.0, 24.0), DefaultParameter::OscTranspose)
                         .lens(osc_lens.clone().then(OscSettings::transpose));
     let transpose_flex = Flex::row()
@@ -106,7 +108,7 @@ where
             })
         }
     ).with_text_size(TEXT_SMALL);
-    let tune_slider = ClickableSlider::new(Slider::new()
+    let tune_slider = DefaultSlider::new(Slider::new()
                         .with_range(-100.0, 100.0), DefaultParameter::OscTune)
                         .lens(osc_lens.clone().then(OscSettings::tune));
     let tune_flex = Flex::row()
@@ -187,7 +189,7 @@ where
     // Log scale slider
     let attack_min = slider_log(adsr_constraints::MIN_ATTACK);
     let attack_max = slider_log(adsr_constraints::MAX_ATTACK);
-    let attack_slider = ClickableSlider::new(Slider::new()
+    let attack_slider = DefaultSlider::new(Slider::new()
                     .with_range(attack_min, attack_max), DefaultParameter::EnvAttack)
                     .lens(env_lens.clone().then(EnvSettings::attack));
     env_flex.add_child(
@@ -207,7 +209,7 @@ where
     // Log scale slider
     let decay_min = slider_log(adsr_constraints::MIN_DECAY);
     let decay_max = slider_log(adsr_constraints::MAX_DECAY);
-    let decay_slider = ClickableSlider::new(Slider::new()
+    let decay_slider = DefaultSlider::new(Slider::new()
                     .with_range(decay_min, decay_max), DefaultParameter::EnvDecay)
                     .lens(env_lens.clone().then(EnvSettings::decay));
     env_flex.add_child(
@@ -224,7 +226,7 @@ where
             format!("{:.2}", lens_clone.with(data, |env| { env.sustain }))
         }
     ).with_text_size(TEXT_SMALL);
-    let sustain_slider = ClickableSlider::new(Slider::new()
+    let sustain_slider = DefaultSlider::new(Slider::new()
                     .with_range(0.0, 1.0), DefaultParameter::EnvSustain)
                     .lens(env_lens.clone().then(EnvSettings::sustain));
     env_flex.add_child(
@@ -244,7 +246,7 @@ where
     // Log scale slider
     let release_min = slider_log(adsr_constraints::MIN_RELEASE);
     let release_max = slider_log(adsr_constraints::MAX_RELEASE);
-    let release_slider = ClickableSlider::new(Slider::new()
+    let release_slider = DefaultSlider::new(Slider::new()
                     .with_range(release_min, release_max), DefaultParameter::EnvRelease)
                     .lens(env_lens.clone().then(EnvSettings::release));
     env_flex.add_child(

@@ -1,5 +1,6 @@
 mod model;
 mod layout;
+mod widgets;
 
 pub use druid::Code as KeyCode;
 use druid::widget::prelude::*;
@@ -7,7 +8,7 @@ use druid::widget::{Flex,CrossAxisAlignment};
 use druid::{WidgetExt};
 
 pub use model::{SynthUIData, SynthUIEvent, Delegate};
-use model::SynthUI;
+use widgets::SynthUI;
 use layout::{BACKGROUND_COLOR, oscillator_layout, synth_volume_layout, env_layout};
 
 
