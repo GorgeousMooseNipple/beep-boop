@@ -8,7 +8,7 @@ It works on Ubuntu 20 and its the one and only platform I truly tested it on.
 * [Interface](#interface)
 * [Controls](#controls)
 * [Demo](#demo)
-* [TODO](#todo)  
+* [TODO:](#todo)  
 
 ## Dependencies
 * Beep-boop uses [Portaudio-rs][portaudio-rs] to produce sounds
