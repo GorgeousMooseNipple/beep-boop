@@ -66,6 +66,7 @@ pub struct Oscillator {
     pub env_idx: usize,
     pub volume: f32,
     voices: Vec<Voice>,
+    #[allow(dead_code)]
     panning: f32,
     pub transpose: f32,
     pub tune: f32,

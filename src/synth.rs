@@ -60,6 +60,7 @@ impl PartialEq for Note {
 }
 
 pub struct Synth<SampleType: SampleFormat> {
+    #[allow(dead_code)]
     sample_rate: f32,
     volume: f32,
     pub oscillators: Vec<Oscillator>,

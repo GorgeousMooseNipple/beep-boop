@@ -32,6 +32,7 @@ pub struct ADSR {
     pub release: f32,
     attack_incr: f32,
     decay_decr: f32,
+    #[allow(dead_code)]
     release_decr: f32,
     release_samples: f32,
 }
