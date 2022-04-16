@@ -47,10 +47,10 @@ Very unprofessional demo recorded on a microphone directly from my speakers. Sor
 ## TODO:
 
 * Probably rework all the internals responsible for producing sounds and optimise it
-* make limited pool of voices available
-* switch between mono and poly modes
-* some form of panning, maybe stereo spread for unisons
-* would be great to implement basic LP/HP filters
+* Make limited pool of voices available
+* Switch between mono and poly modes
+* Some form of panning, maybe stereo spread for unisons
+* Would be great to implement basic LP/HP filters
 
 
 [portaudio-rs]: https://github.com/mvdnes/portaudio-rs
