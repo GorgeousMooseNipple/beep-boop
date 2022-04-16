@@ -33,35 +33,35 @@ impl druid::AppDelegate<SynthUIData> for Delegate {
 pub struct OscSettings {
     pub id: usize,
     // title: String,
-    pub wave_idx: f64,
-    pub volume: f64,
-    pub transpose: f64,
-    pub tune: f64,
-    pub unisons: f64,
-    pub env_idx: f64,
+    pub(super) wave_idx: f64,
+    pub(super) volume: f64,
+    pub(super) transpose: f64,
+    pub(super) tune: f64,
+    pub(super) unisons: f64,
+    pub(super) env_idx: f64,
 }
 
 #[derive(Clone, Data, Lens)]
 pub struct EnvSettings {
-    pub id: usize,
-    pub attack: f64,
-    pub decay: f64,
-    pub sustain: f64,
-    pub release: f64,
+    pub(super) id: usize,
+    pub(super) attack: f64,
+    pub(super) decay: f64,
+    pub(super) sustain: f64,
+    pub(super) release: f64,
 }
 
 #[derive(Clone, Data, Lens)]
 pub struct SynthUIData {
     #[data(ignore)]
-    pub synth: Arc<Mutex<Synth<i16>>>,
+    pub(super) synth: Arc<Mutex<Synth<i16>>>,
     #[data(ignore)]
-    pub event_sender: mpsc::Sender<SynthUIEvent>,
-    pub octave_modifier: f32,
-    pub volume_db: f64,
-    pub osc1: OscSettings,
-    pub osc2: OscSettings,
-    pub env1: EnvSettings,
-    pub env2: EnvSettings,
+    pub(super) event_sender: mpsc::Sender<SynthUIEvent>,
+    pub(super) octave_modifier: f32,
+    pub(super) volume_db: f64,
+    pub(super) osc1: OscSettings,
+    pub(super) osc2: OscSettings,
+    pub(super) env1: EnvSettings,
+    pub(super) env2: EnvSettings,
 }
 
 impl SynthUIData {
