@@ -42,7 +42,8 @@ Application can be closed by pressing Escape.
 
 ## Demo
 Very unprofessional demo recorded on a microphone directly from my speakers. Sorry about quality.  
-[Demo recording](../media/audio/beep-boop-demo.mp4)
+https://user-images.githubusercontent.com/36864010/163676890-1f525295-d085-4942-bb2b-0abf3f6bddbd.mp4
+
 
 ## TODO:
 
