@@ -29,7 +29,7 @@ pub enum DefaultParameter {
 }
 
 impl DefaultParameter {
-    pub fn default_value(&self) -> f64 {
+    pub fn default_val(&self) -> f64 {
         match self {
             DefaultParameter::EnvAttack => DEFAULT_ATTACK,
             DefaultParameter::EnvDecay => DEFAULT_DECAY,
@@ -156,37 +156,37 @@ impl SynthUIData {
         let mut synth_lock = synth.lock().unwrap();
 
         // attack, decay and release are log scaler representation now
-        let default_attack_log = slider_log(DEFAULT_ATTACK as f32);
-        let default_decay_log = slider_log(DEFAULT_DECAY as f32);
-        let default_release_log = slider_log(DEFAULT_RELEASE as f32);
+        let default_attack_log = slider_log(DefaultParameter::EnvAttack.default_val() as f32);
+        let default_decay_log = slider_log(DefaultParameter::EnvDecay.default_val() as f32);
+        let default_release_log = slider_log(DefaultParameter::EnvRelease.default_val() as f32);
         let env1 = EnvSettings {
             id: 0,
             attack: default_attack_log,
             decay: default_decay_log,
-            sustain: DEFAULT_SUSTAIN,
+            sustain: DefaultParameter::EnvSustain.default_val(),
             release: default_release_log,
         };
         let envelope1 = ADSR::new(
             sample_rate,
-            DEFAULT_ATTACK as u32,
-            DEFAULT_DECAY as u32,
-            DEFAULT_SUSTAIN as f32,
-            DEFAULT_RELEASE as u32);
+            DefaultParameter::EnvAttack.default_val() as u32,
+            DefaultParameter::EnvDecay.default_val() as u32,
+            DefaultParameter::EnvSustain.default_val() as f32,
+            DefaultParameter::EnvRelease.default_val() as u32);
         synth_lock.add_env(envelope1);
 
         let env2 = EnvSettings {
             id: 1,
             attack: default_attack_log,
             decay: default_decay_log,
-            sustain: DEFAULT_SUSTAIN,
+            sustain: DefaultParameter::EnvSustain.default_val(),
             release: default_release_log,
         };
         let envelope2 = ADSR::new(
             sample_rate,
-            DEFAULT_ATTACK as u32,
-            DEFAULT_DECAY as u32,
-            DEFAULT_SUSTAIN as f32,
-            DEFAULT_RELEASE as u32);
+            DefaultParameter::EnvAttack.default_val() as u32,
+            DefaultParameter::EnvDecay.default_val() as u32,
+            DefaultParameter::EnvSustain.default_val() as f32,
+            DefaultParameter::EnvRelease.default_val() as u32);
         synth_lock.add_env(envelope2);
 
         let osc1 = OscSettings {
@@ -445,9 +445,9 @@ impl Widget<f64> for ClickableSlider {
                     match self.parameter {
                         // Log scale parameters
                         DefaultParameter::EnvAttack | DefaultParameter::EnvDecay | DefaultParameter::EnvRelease => {
-                            *data = slider_log(self.parameter.default_value() as f32);
+                            *data = slider_log(self.parameter.default_val() as f32);
                         },
-                        _ => *data = self.parameter.default_value(),
+                        _ => *data = self.parameter.default_val(),
                     }
                     return
                 }
