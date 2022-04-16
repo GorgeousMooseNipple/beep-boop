@@ -5,40 +5,8 @@ use druid::{Data, Lens};
 
 use crate::synth::{Synth, Oscillator, ADSR, Start};
 use super::layout::{slider_log};
-use super::widgets::WAVEFORMS;
+use super::constants::{WAVEFORMS, DefaultParameter};
 
-
-const DEFAULT_ATTACK: f64 = 300.;
-const DEFAULT_DECAY: f64 = 300.;
-const DEFAULT_SUSTAIN: f64 = 0.7;
-const DEFAULT_RELEASE: f64 = 300.;
-const DEFAULT_TRANSPOSE: f64 = 0.0;
-const DEFAULT_TUNE: f64 = 0.0;
-const DEFAULT_OSC_VOLUME: f64 = 0.5;
-
-pub enum DefaultParameter {
-    EnvAttack,
-    EnvDecay,
-    EnvSustain,
-    EnvRelease,
-    OscTranspose,
-    OscTune,
-    OscVolume,
-}
-
-impl DefaultParameter {
-    pub fn default_val(&self) -> f64 {
-        match self {
-            DefaultParameter::EnvAttack => DEFAULT_ATTACK,
-            DefaultParameter::EnvDecay => DEFAULT_DECAY,
-            DefaultParameter::EnvSustain => DEFAULT_SUSTAIN,
-            DefaultParameter::EnvRelease => DEFAULT_RELEASE,
-            DefaultParameter::OscTranspose => DEFAULT_TRANSPOSE,
-            DefaultParameter::OscTune => DEFAULT_TUNE,
-            DefaultParameter::OscVolume => DEFAULT_OSC_VOLUME,
-        }
-    }
-}
 
 use druid::{DelegateCtx, WindowId};
 

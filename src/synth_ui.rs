@@ -1,6 +1,7 @@
 mod model;
 mod layout;
 mod widgets;
+mod constants;
 
 pub use druid::Code as KeyCode;
 use druid::widget::prelude::*;

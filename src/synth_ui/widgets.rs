@@ -4,34 +4,12 @@ use druid::widget::{Flex, Slider, CrossAxisAlignment};
 use druid::Code as KeyCode;
 use druid::KeyEvent;
 use super::{
-    model::{DefaultParameter, SynthUIData, SynthUIEvent, OscSettings, EnvSettings},
+    model::{SynthUIData, SynthUIEvent, OscSettings, EnvSettings},
     layout::{slider_log, LOG_SCALE_BASE},
+    constants::{WAVEFORMS, DefaultParameter},
 };
 use crate::synth::{Synth, WaveForm, ADSRParam};
 
-
-pub const WAVEFORMS: [WaveFormUI; 5] = [
-    WaveFormUI {
-        name: "Saw",
-        waveform: WaveForm::Saw,
-    },
-    WaveFormUI {
-        name: "Sine",
-        waveform: WaveForm::Sine,
-    },
-    WaveFormUI {
-        name: "Square",
-        waveform: WaveForm::Square,
-    },
-    WaveFormUI {
-        name: "Pulse25%",
-        waveform: WaveForm::Pulse25,
-    },
-    WaveFormUI {
-        name: "Triangle",
-        waveform: WaveForm::Triangle,
-    },
-];
 
 fn round_float(f: f32, accuracy: i32) -> f32 {
     let base = 10f32.powi(accuracy);

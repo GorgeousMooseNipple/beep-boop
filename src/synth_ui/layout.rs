@@ -2,8 +2,8 @@ use druid::{Lens, LensExt, WidgetExt};
 use druid::widget::prelude::*;
 use druid::widget::{Flex, Stepper, Slider, Label, CrossAxisAlignment};
 
-use super::model::{SynthUIData, OscSettings, EnvSettings, DefaultParameter};
-use super::widgets::WAVEFORMS;
+use super::model::{SynthUIData, OscSettings, EnvSettings};
+use super::constants::{WAVEFORMS, DefaultParameter};
 use super::widgets::DefaultSlider;
 use crate::synth::adsr_constraints;
 
