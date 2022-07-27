@@ -3,7 +3,7 @@ Toy synthesizer written in Rust.
 I was just curious how to make this thing produce sounds. Also this was my first non "Hello, world!"-type project in Rust.  
 It works on Ubuntu 20 and its the one and only platform I truly tested it on.
 
-## Content
+## Contents
 * [Dependencies](#dependencies)
 * [Interface](#interface)
 * [Controls](#controls)
